@@ -1,35 +1,65 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Zetiify Login</title>
+  <title>Zetiify</title>
 </head>
 <body>
 
-<h2>Zetiify Login</h2>
+  <h1>Zetiify Login</h1>
 
-<input id="email" placeholder="Email"><br><br>
-<input id="password" placeholder="Password" type="password"><br><br>
+  <input type="text" id="email" placeholder="Email" /><br><br>
+  <input type="password" id="password" placeholder="Password" /><br><br>
 
-<button onclick="login()">Login</button>
+  <button onclick="login()">Login</button>
 
-<script>
-async function login() {
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
+  <h2 id="status"></h2>
 
-  const res = await fetch("https://zetiify-ia7r.onrender.com/api/deals", {
-    method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify({ email, password })
-  });
+  <div id="deals"></div>
 
-  if (res.ok) {
-    alert("Login successful");
-  } else {
-    alert("Login failed");
-  }
-}
-</script>
+  <script>
+    async function login() {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
+
+      try {
+        const res = await fetch("/api/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            email: email,
+            password: password
+          })
+        });
+
+        const data = await res.json();
+
+        if (!res.ok) {
+          document.getElementById("status").innerText = "❌ Login failed";
+          return;
+        }
+
+        document.getElementById("status").innerText = "✅ Login successful";
+
+        // Fetch deals after login
+        const dealsRes = await fetch("/api/deals");
+        const deals = await dealsRes.json();
+
+        let html = "<h3>Deals:</h3><ul>";
+        deals.forEach(d => {
+          html += `<li>${d.name} | Score: ${d.score} | Stage: ${d.stage} | Ask: ${d.ask}</li>`;
+        });
+        html += "</ul>";
+
+        document.getElementById("deals").innerHTML = html;
+
+      } catch (err) {
+        document.getElementById("status").innerText = "⚠️ Error connecting to server";
+        console.error(err);
+      }
+    }
+  </script>
 
 </body>
 </html>
