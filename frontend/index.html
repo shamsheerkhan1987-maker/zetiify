@@ -1,62 +1,72 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Zetiify</title>
+  <title>Zetiify Login</title>
 </head>
 <body>
 
-  <h1>Zetiify Login</h1>
+<h1>Zetiify Login</h1>
 
-  <input type="text" id="email" placeholder="Email" /><br><br>
-  <input type="password" id="password" placeholder="Password" /><br><br>
+<input type="text" id="email" placeholder="Email" value="investor@zetiify.com"><br><br>
+<input type="password" id="password" placeholder="Password" value="123456"><br><br>
 
-  <button onclick="login()">Login</button>
+<button onclick="login()">Login</button>
 
-  <h2 id="status"></h2>
-  <pre id="output"></pre>
+<div id="status"></div>
+<div id="deals"></div>
 
-  <script>
-    async function login() {
-      const email = document.getElementById("email").value.trim();
-      const password = document.getElementById("password").value.trim();
+<script>
+async function login() {
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
 
-      console.log("Sending:", { email, password });
+  const res = await fetch("/api/login", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({ email, password })
+  });
 
-      try {
-        const res = await fetch("/api/login", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
-          body: JSON.stringify({
-            email: email,
-            password: password
-          })
-        });
+  if (res.ok) {
+    document.getElementById("status").innerHTML = "✅ Login successful";
+    loadDeals();
+  } else {
+    document.getElementById("status").innerHTML = "❌ Login failed";
+  }
+}
 
-        const data = await res.json();
-        console.log("Response:", data);
+async function loadDeals() {
+  const res = await fetch("/api/deals");
+  const data = await res.json();
 
-        if (!res.ok) {
-          document.getElementById("status").innerText = "❌ Login failed";
-          return;
-        }
+  let html = `
+    <h2>Investor Deals</h2>
+    <table border="1" cellpadding="10">
+      <tr>
+        <th>Name</th>
+        <th>Score</th>
+        <th>Stage</th>
+        <th>Ask</th>
+      </tr>
+  `;
 
-        document.getElementById("status").innerText = "✅ Login successful";
+  data.forEach(d => {
+    html += `
+      <tr>
+        <td>${d.name}</td>
+        <td>${d.score}</td>
+        <td>${d.stage}</td>
+        <td>${d.ask}</td>
+      </tr>
+    `;
+  });
 
-        // Fetch deals
-        const dealsRes = await fetch("/api/deals");
-        const deals = await dealsRes.json();
+  html += "</table>";
 
-        document.getElementById("output").innerText =
-          JSON.stringify(deals, null, 2);
-
-      } catch (err) {
-        console.error(err);
-        document.getElementById("status").innerText = "⚠️ Error";
-      }
-    }
-  </script>
+  document.getElementById("deals").innerHTML = html;
+}
+</script>
 
 </body>
 </html>
