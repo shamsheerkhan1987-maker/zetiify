@@ -4,23 +4,31 @@ const path = require("path");
 
 const app = express();
 
+// =======================
 // Middleware
+// =======================
 app.use(cors());
 app.use(express.json());
 
 // =======================
-// APIs
+// Demo Login API
 // =======================
 app.post("/api/login", (req, res) => {
   const { email, password } = req.body;
 
   if (email === "investor@zetiify.com" && password === "123456") {
-    return res.json({ role: "investor", token: "demo-token" });
+    return res.json({
+      role: "investor",
+      token: "demo-token"
+    });
   }
 
   res.status(401).json({ message: "Invalid credentials" });
 });
 
+// =======================
+// Demo Deals API
+// =======================
 app.get("/api/deals", (req, res) => {
   res.json([
     { name: "Fintech AI", score: 92, stage: "Seed", ask: "₹2 Cr" },
@@ -29,18 +37,16 @@ app.get("/api/deals", (req, res) => {
 });
 
 // =======================
-// FIXED FRONTEND SERVING
+// Serve Frontend (CRITICAL FIX)
 // =======================
-const frontendPath = path.join(__dirname, "../frontend");
-
-app.use(express.static(frontendPath));
+app.use(express.static(path.join(__dirname, "../frontend")));
 
 app.get("/", (req, res) => {
-  res.sendFile(path.join(frontendPath, "index.html"));
+  res.sendFile(path.join(__dirname, "../frontend/index.html"));
 });
 
 // =======================
-// START SERVER
+// Start Server
 // =======================
 const PORT = process.env.PORT || 5000;
 
