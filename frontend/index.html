@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Zetiify Login</title>
+</head>
+<body>
+
+<h2>Zetiify Login</h2>
+
+<input id="email" placeholder="Email"><br><br>
+<input id="password" placeholder="Password" type="password"><br><br>
+
+<button onclick="login()">Login</button>
+
+<script>
+async function login() {
+  const email = document.getElementById("email").value;
+  const password = document.getElementById("password").value;
+
+  const res = await fetch("https://zetiify-ia7r.onrender.com/api/deals", {
+    method: "POST",
+    headers: {"Content-Type": "application/json"},
+    body: JSON.stringify({ email, password })
+  });
+
+  if (res.ok) {
+    alert("Login successful");
+  } else {
+    alert("Login failed");
+  }
+}
+</script>
+
+</body>
+</html>
