@@ -35,7 +35,7 @@ app.get("/api/deals", (req, res) => {
 });
 
 // =======================
-// Serve Frontend (FIXED)
+// Serve Frontend
 // =======================
 app.use(express.static(path.join(__dirname, "../frontend")));
 
@@ -43,8 +43,6 @@ app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "../frontend/index.html"));
 });
 
-// =======================
-// Start Server
 // =======================
 const PORT = process.env.PORT || 5000;
 
