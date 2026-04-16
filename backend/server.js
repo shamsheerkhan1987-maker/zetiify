@@ -4,14 +4,12 @@ const path = require("path");
 
 const app = express();
 
-// =======================
 // Middleware
-// =======================
 app.use(cors());
 app.use(express.json());
 
 // =======================
-// Demo Login API
+// Login API
 // =======================
 app.post("/api/login", (req, res) => {
   const { email, password } = req.body;
@@ -27,7 +25,7 @@ app.post("/api/login", (req, res) => {
 });
 
 // =======================
-// Demo Deals API
+// Deals API
 // =======================
 app.get("/api/deals", (req, res) => {
   res.json([
@@ -37,7 +35,7 @@ app.get("/api/deals", (req, res) => {
 });
 
 // =======================
-// Serve Frontend (CRITICAL FIX)
+// Serve Frontend (FIXED)
 // =======================
 app.use(express.static(path.join(__dirname, "../frontend")));
 
