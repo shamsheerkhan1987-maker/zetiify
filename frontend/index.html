@@ -1,24 +1,37 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Zetiify</title>
+  <title>Zetiify Dashboard</title>
+
   <style>
     body {
       font-family: Arial;
+      background: #f5f6fa;
       padding: 40px;
-      background: #f5f7fa;
     }
 
     h1 {
-      color: #333;
+      margin-bottom: 20px;
+    }
+
+    .card {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      width: 300px;
+      margin: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    .container {
+      display: flex;
+      flex-wrap: wrap;
     }
 
     input {
-      padding: 10px;
+      padding: 8px;
       margin: 5px;
-      width: 250px;
-      border: 1px solid #ccc;
-      border-radius: 5px;
+      width: 120px;
     }
 
     button {
@@ -26,103 +39,134 @@
       background: #6c5ce7;
       color: white;
       border: none;
-      border-radius: 5px;
       cursor: pointer;
+      margin: 10px 0;
     }
 
-    button:hover {
-      background: #5a4bd6;
+    .top {
+      border: 2px solid gold;
     }
 
-    table {
-      margin-top: 20px;
-      border-collapse: collapse;
-      width: 60%;
+    .form {
       background: white;
+      padding: 15px;
+      border-radius: 10px;
+      margin-bottom: 20px;
+      width: 650px;
       box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    }
-
-    th, td {
-      padding: 12px;
-      border: 1px solid #eee;
-      text-align: left;
-    }
-
-    th {
-      background: #6c5ce7;
-      color: white;
-    }
-
-    #status {
-      margin-top: 15px;
-      font-weight: bold;
     }
   </style>
 </head>
+
 <body>
 
-<h1>Zetiify Investor Login</h1>
+  <!-- LOGIN -->
+  <div id="loginSection">
+    <h1>Zetiify Login</h1>
 
-<input type="text" id="email" value="investor@zetiify.com"><br>
-<input type="password" id="password" value="123456"><br><br>
+    <input id="email" value="investor@zetiify.com" />
+    <input id="password" type="password" value="123456" />
 
-<button onclick="login()">Login</button>
+    <button onclick="login()">Login</button>
+    <p id="status"></p>
+  </div>
 
-<div id="status"></div>
-<div id="deals"></div>
+  <!-- DASHBOARD -->
+  <div id="dashboard" style="display:none;">
+    <h1>🚀 Investor Dashboard</h1>
 
-<script>
-async function login() {
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
+    <!-- ADD STARTUP FORM -->
+    <div class="form">
+      <h3>Add Startup</h3>
 
-  const res = await fetch("/api/login", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email, password })
-  });
+      <input id="name" placeholder="Startup Name" />
+      <input id="traction" placeholder="Traction (0-100)" />
+      <input id="team" placeholder="Team (0-100)" />
+      <input id="market" placeholder="Market (0-100)" />
+      <input id="product" placeholder="Product (0-100)" />
 
-  if (!res.ok) {
-    document.getElementById("status").innerText = "❌ Login failed";
-    return;
-  }
+      <br>
+      <button onclick="addStartup()">Add Startup</button>
+    </div>
 
-  document.getElementById("status").innerText = "✅ Login successful";
+    <div id="dealsContainer" class="container"></div>
+  </div>
 
-  loadDeals();
-}
+  <script>
+    let startups = [];
 
-async function loadDeals() {
-  const res = await fetch("/api/deals");
-  const data = await res.json();
+    function calculateScore(s) {
+      return (
+        s.traction * 0.4 +
+        s.team * 0.2 +
+        s.market * 0.2 +
+        s.product * 0.2
+      ).toFixed(1);
+    }
 
-  let html = `
-    <h2>Investor Deals</h2>
-    <table>
-      <tr>
-        <th>Name</th>
-        <th>Score</th>
-        <th>Stage</th>
-        <th>Ask</th>
-      </tr>
-  `;
+    async function login() {
+      const email = document.getElementById("email").value;
+      const password = document.getElementById("password").value;
 
-  data.forEach(d => {
-    html += `
-      <tr>
-        <td>${d.name}</td>
-        <td>${d.score}</td>
-        <td>${d.stage}</td>
-        <td>${d.ask}</td>
-      </tr>
-    `;
-  });
+      const res = await fetch("/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, password })
+      });
 
-  html += "</table>";
+      if (!res.ok) {
+        document.getElementById("status").innerText = "❌ Login failed";
+        return;
+      }
 
-  document.getElementById("deals").innerHTML = html;
-}
-</script>
+      document.getElementById("loginSection").style.display = "none";
+      document.getElementById("dashboard").style.display = "block";
+    }
+
+    function addStartup() {
+      const s = {
+        name: document.getElementById("name").value,
+        traction: Number(document.getElementById("traction").value),
+        team: Number(document.getElementById("team").value),
+        market: Number(document.getElementById("market").value),
+        product: Number(document.getElementById("product").value)
+      };
+
+      s.score = calculateScore(s);
+
+      startups.push(s);
+
+      renderStartups();
+    }
+
+    function renderStartups() {
+      const container = document.getElementById("dealsContainer");
+      container.innerHTML = "";
+
+      // Sort by score
+      startups.sort((a, b) => b.score - a.score);
+
+      startups.forEach((s, index) => {
+        const card = document.createElement("div");
+        card.className = "card";
+
+        if (index === 0) {
+          card.classList.add("top");
+        }
+
+        card.innerHTML = `
+          <h3>${s.name}</h3>
+          <p>Score: <b>${s.score}</b></p>
+          <p>Traction: ${s.traction}</p>
+          <p>Team: ${s.team}</p>
+          <p>Market: ${s.market}</p>
+          <p>Product: ${s.product}</p>
+        `;
+
+        container.appendChild(card);
+      });
+    }
+  </script>
 
 </body>
 </html>
