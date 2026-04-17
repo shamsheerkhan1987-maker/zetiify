@@ -1,125 +1,28 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Zetiify Investor Dashboard</title>
-
+  <title>Zetiify VC Dashboard</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
-    * {
-      box-sizing: border-box;
-      font-family: Arial, sans-serif;
-    }
+    * { box-sizing: border-box; font-family: Arial; }
 
     body {
       margin: 0;
       background: #f4f6fb;
-      color: #222;
-    }
-
-    .container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 40px 20px;
-    }
-
-    .logo {
-      font-size: 32px;
-      font-weight: bold;
-      margin-bottom: 20px;
-    }
-
-    .card {
-      background: white;
-      border-radius: 12px;
-      padding: 25px;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.08);
-      width: 100%;
-      max-width: 850px;
-      margin-bottom: 25px;
-    }
-
-    .login-card {
-      max-width: 350px;
-    }
-
-    h1, h2, h3 {
-      margin: 10px 0;
-    }
-
-    input {
-      width: 100%;
-      padding: 12px;
-      margin-top: 8px;
-      margin-bottom: 15px;
-      border-radius: 6px;
-      border: 1px solid #ddd;
-    }
-
-    button {
-      width: 100%;
-      padding: 12px;
-      border: none;
-      border-radius: 6px;
-      background: linear-gradient(90deg, #6c63ff, #7f6bff);
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-    }
-
-    button:hover {
-      opacity: 0.9;
-    }
-
-    .hidden {
-      display: none;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 15px;
-    }
-
-    .label {
-      font-size: 13px;
-      color: #555;
-      margin-bottom: 4px;
-    }
-
-    .desc {
-      font-size: 12px;
-      color: #888;
-      margin-bottom: 5px;
-    }
-
-    .result-card {
-      background: white;
-      border-radius: 10px;
-      padding: 18px;
-      margin-top: 15px;
-      border-left: 5px solid #6c63ff;
-      width: 100%;
-      max-width: 850px;
-    }
-
-    .score {
-      font-size: 20px;
-      font-weight: bold;
-      color: #6c63ff;
     }
 
     .topbar {
-      width: 100%;
       background: white;
-      padding: 15px 25px;
+      padding: 15px 30px;
       display: flex;
       justify-content: space-between;
-      align-items: center;
       box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-      position: sticky;
-      top: 0;
+    }
+
+    .logo {
+      font-size: 22px;
+      font-weight: bold;
     }
 
     .logout {
@@ -128,10 +31,81 @@
       font-weight: bold;
     }
 
-    @media(max-width: 768px) {
-      .grid {
-        grid-template-columns: 1fr;
-      }
+    .container {
+      padding: 30px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .card {
+      background: white;
+      padding: 25px;
+      border-radius: 12px;
+      box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+      width: 100%;
+      max-width: 900px;
+      margin-bottom: 20px;
+    }
+
+    .login-card {
+      max-width: 350px;
+      margin-top: 100px;
+    }
+
+    input {
+      width: 100%;
+      padding: 12px;
+      margin-top: 10px;
+      margin-bottom: 15px;
+      border-radius: 6px;
+      border: 1px solid #ddd;
+    }
+
+    button {
+      padding: 10px;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      margin: 5px 3px;
+      color: white;
+      background: linear-gradient(90deg,#6c63ff,#7f6bff);
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 15px;
+    }
+
+    .hidden { display: none; }
+
+    .result-card {
+      background: white;
+      padding: 20px;
+      border-radius: 10px;
+      margin-top: 15px;
+      width: 100%;
+      max-width: 900px;
+      border-left: 6px solid #6c63ff;
+    }
+
+    .score {
+      font-size: 20px;
+      color: #6c63ff;
+      font-weight: bold;
+    }
+
+    .stage {
+      font-weight: bold;
+    }
+
+    ul {
+      padding-left: 20px;
+    }
+
+    @media(max-width:768px){
+      .grid { grid-template-columns: 1fr; }
     }
 
   </style>
@@ -141,7 +115,7 @@
 
 <!-- TOPBAR -->
 <div class="topbar hidden" id="topbar">
-  <div><b>🚀 Zetiify</b></div>
+  <div class="logo">🚀 Zetiify</div>
   <div class="logout" onclick="logout()">Logout</div>
 </div>
 
@@ -155,7 +129,6 @@
     <input id="password" type="password" placeholder="Password">
 
     <button onclick="login()">Login</button>
-
     <p id="status"></p>
   </div>
 
@@ -171,31 +144,27 @@
       <div class="grid">
 
         <div>
-          <div class="label">Startup Name</div>
+          <label>Startup Name</label>
           <input id="name">
         </div>
 
         <div>
-          <div class="label">Traction (0-100)</div>
-          <div class="desc">Users, revenue growth, adoption</div>
+          <label>Traction (0-100)</label>
           <input id="traction">
         </div>
 
         <div>
-          <div class="label">Team (0-100)</div>
-          <div class="desc">Founder strength, execution ability</div>
+          <label>Team (0-100)</label>
           <input id="team">
         </div>
 
         <div>
-          <div class="label">Market (0-100)</div>
-          <div class="desc">Market size, demand, scalability</div>
+          <label>Market (0-100)</label>
           <input id="market">
         </div>
 
         <div>
-          <div class="label">Product (0-100)</div>
-          <div class="desc">Quality, UX, differentiation</div>
+          <label>Product (0-100)</label>
           <input id="product">
         </div>
 
@@ -214,12 +183,12 @@
 <script>
 
 async function login() {
-  const email = document.getElementById("email").value;
-  const password = document.getElementById("password").value;
+  const email = emailInput();
+  const password = passwordInput();
 
   const res = await fetch("/api/login", {
     method: "POST",
-    headers: {"Content-Type": "application/json"},
+    headers: {"Content-Type":"application/json"},
     body: JSON.stringify({ email, password })
   });
 
@@ -232,57 +201,65 @@ async function login() {
   }
 }
 
-function logout() {
+function logout(){
   location.reload();
 }
 
-async function addStartup() {
+function emailInput(){ return document.getElementById("email").value; }
+function passwordInput(){ return document.getElementById("password").value; }
+
+function updateStage(name, stage){
+  document.getElementById(`stage-${name}`).innerText = stage;
+}
+
+async function addStartup(){
+
+  const name = document.getElementById("name").value;
+  const traction = +document.getElementById("traction").value;
+  const team = +document.getElementById("team").value;
+  const market = +document.getElementById("market").value;
+  const product = +document.getElementById("product").value;
 
   const data = {
-    problem: 80,
-    solution: 80,
-    insight: 70,
-    marketSize: +market.value,
-    narrative: 70,
-
-    founderFit: +team.value,
-    execution: 70,
-    decision: 60,
-    learning: 60,
-    hiring: 60,
-
-    productReady: +product.value,
-    users: +traction.value,
-    validation: 60,
-    momentum: 60,
-
-    monetization: 60,
-    pricing: 60,
-    scalability: 60,
-    cost: 60,
-
-    funding: 60,
-    useOfFunds: 60,
-    runway: 60,
-    valuation: 60
+    problem:80, solution:80, insight:70, marketSize:market, narrative:70,
+    founderFit:team, execution:70, decision:60, learning:60, hiring:60,
+    productReady:product, users:traction, validation:60, momentum:60,
+    monetization:60, pricing:60, scalability:60, cost:60,
+    funding:60, useOfFunds:60, runway:60, valuation:60
   };
 
   const res = await fetch("/api/score", {
-    method: "POST",
-    headers: {"Content-Type": "application/json"},
-    body: JSON.stringify(data)
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify(data)
   });
 
   const result = await res.json();
 
+  // INSIGHTS
+  let insights = [];
+  if (traction < 30) insights.push("⚠️ Weak traction");
+  if (team > 80) insights.push("🔥 Strong team");
+  if (market > 80) insights.push("📈 Large market");
+
+  const insightHTML = insights.map(i => `<li>${i}</li>`).join("");
+
   document.getElementById("results").innerHTML += `
     <div class="result-card">
-      <h3>${name.value}</h3>
+      <h3>${name}</h3>
+
       <p class="score">Score: ${result.score}</p>
-      <p>Traction: ${traction.value}</p>
-      <p>Team: ${team.value}</p>
-      <p>Market: ${market.value}</p>
-      <p>Product: ${product.value}</p>
+
+      <p class="stage">Stage: <span id="stage-${name}">NEW</span></p>
+
+      <ul>${insightHTML}</ul>
+
+      <div>
+        <button onclick="updateStage('${name}','REVIEW')">Review</button>
+        <button onclick="updateStage('${name}','IC')">IC</button>
+        <button onclick="updateStage('${name}','INVESTED')">Invest</button>
+        <button onclick="updateStage('${name}','PASSED')">Pass</button>
+      </div>
     </div>
   `;
 }
