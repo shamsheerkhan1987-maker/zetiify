@@ -5,264 +5,88 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
   <style>
-    * { box-sizing: border-box; font-family: Arial; }
-
-    body {
-      margin: 0;
-      background: #f4f6fb;
-    }
-
-    .topbar {
-      background: white;
-      padding: 15px 30px;
-      display: flex;
-      justify-content: space-between;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-    }
-
-    .logo {
-      font-size: 22px;
-      font-weight: bold;
-    }
-
-    .logout {
-      cursor: pointer;
-      color: #6c63ff;
-      font-weight: bold;
-    }
-
-    .container {
-      padding: 30px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-
-    .card {
-      background: white;
-      padding: 25px;
-      border-radius: 12px;
-      box-shadow: 0 8px 25px rgba(0,0,0,0.08);
-      width: 100%;
-      max-width: 900px;
-      margin-bottom: 20px;
-    }
-
-    .login-card {
-      max-width: 350px;
-      margin-top: 100px;
-    }
-
-    input {
-      width: 100%;
-      padding: 12px;
-      margin-top: 10px;
-      margin-bottom: 15px;
-      border-radius: 6px;
-      border: 1px solid #ddd;
-    }
-
-    button {
-      padding: 10px;
-      border: none;
-      border-radius: 6px;
-      cursor: pointer;
-      margin: 5px 3px;
-      color: white;
-      background: linear-gradient(90deg,#6c63ff,#7f6bff);
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 15px;
-    }
-
-    .hidden { display: none; }
-
-    .result-card {
-      background: white;
-      padding: 20px;
-      border-radius: 10px;
-      margin-top: 15px;
-      width: 100%;
-      max-width: 900px;
-      border-left: 6px solid #6c63ff;
-    }
-
-    .score {
-      font-size: 20px;
-      color: #6c63ff;
-      font-weight: bold;
-    }
-
-    .stage {
-      font-weight: bold;
-    }
-
-    ul {
-      padding-left: 20px;
-    }
-
-    @media(max-width:768px){
-      .grid { grid-template-columns: 1fr; }
-    }
-
+    body { font-family: Arial; background: #f4f6fb; margin: 0; }
+    .container { padding: 30px; text-align: center; }
+    .card { background: white; padding: 20px; margin: auto; width: 400px; border-radius: 10px; }
+    input { width: 100%; padding: 10px; margin: 10px 0; }
+    button { padding: 10px; margin: 5px; background: #6c63ff; color: white; border: none; }
+    .result { background: white; margin: 10px auto; padding: 15px; width: 400px; border-left: 5px solid #6c63ff; }
   </style>
 </head>
 
 <body>
 
-<!-- TOPBAR -->
-<div class="topbar hidden" id="topbar">
-  <div class="logo">🚀 Zetiify</div>
-  <div class="logout" onclick="logout()">Logout</div>
-</div>
-
 <div class="container">
 
-  <!-- LOGIN -->
-  <div class="card login-card" id="loginCard">
-    <h2>Investor Login</h2>
+  <h1>Zetiify</h1>
 
-    <input id="email" placeholder="Email">
-    <input id="password" type="password" placeholder="Password">
+  <div class="card">
+    <input id="name" placeholder="Startup Name">
+    <input id="traction" placeholder="Traction">
+    <input id="team" placeholder="Team">
+    <input id="market" placeholder="Market">
+    <input id="product" placeholder="Product">
 
-    <button onclick="login()">Login</button>
-    <p id="status"></p>
+    <button onclick="addStartup()">Add Startup</button>
   </div>
 
-  <!-- DASHBOARD -->
-  <div id="dashboard" class="hidden">
-
-    <h2>Investor Dashboard</h2>
-
-    <div class="card">
-
-      <h3>Add Startup</h3>
-
-      <div class="grid">
-
-        <div>
-          <label>Startup Name</label>
-          <input id="name">
-        </div>
-
-        <div>
-          <label>Traction (0-100)</label>
-          <input id="traction">
-        </div>
-
-        <div>
-          <label>Team (0-100)</label>
-          <input id="team">
-        </div>
-
-        <div>
-          <label>Market (0-100)</label>
-          <input id="market">
-        </div>
-
-        <div>
-          <label>Product (0-100)</label>
-          <input id="product">
-        </div>
-
-      </div>
-
-      <button onclick="addStartup()">Add Startup</button>
-
-    </div>
-
-    <div id="results"></div>
-
-  </div>
+  <div id="results"></div>
 
 </div>
 
 <script>
 
-async function login() {
-  const email = emailInput();
-  const password = passwordInput();
-
-  const res = await fetch("/api/login", {
-    method: "POST",
-    headers: {"Content-Type":"application/json"},
-    body: JSON.stringify({ email, password })
-  });
-
-  if (res.ok) {
-    document.getElementById("loginCard").classList.add("hidden");
-    document.getElementById("dashboard").classList.remove("hidden");
-    document.getElementById("topbar").classList.remove("hidden");
-  } else {
-    document.getElementById("status").innerText = "❌ Invalid credentials";
-  }
-}
-
-function logout(){
-  location.reload();
-}
-
-function emailInput(){ return document.getElementById("email").value; }
-function passwordInput(){ return document.getElementById("password").value; }
-
-function updateStage(name, stage){
-  document.getElementById(`stage-${name}`).innerText = stage;
-}
-
-async function addStartup(){
-
-  const name = document.getElementById("name").value;
-  const traction = +document.getElementById("traction").value;
-  const team = +document.getElementById("team").value;
-  const market = +document.getElementById("market").value;
-  const product = +document.getElementById("product").value;
+async function addStartup() {
 
   const data = {
-    problem:80, solution:80, insight:70, marketSize:market, narrative:70,
-    founderFit:team, execution:70, decision:60, learning:60, hiring:60,
-    productReady:product, users:traction, validation:60, momentum:60,
-    monetization:60, pricing:60, scalability:60, cost:60,
-    funding:60, useOfFunds:60, runway:60, valuation:60
+    name: name.value,
+    traction: +traction.value,
+    team: +team.value,
+    market: +market.value,
+    product: +product.value
   };
 
-  const res = await fetch("/api/score", {
-    method:"POST",
-    headers:{"Content-Type":"application/json"},
-    body:JSON.stringify(data)
+  const res = await fetch("/api/startup", {
+    method: "POST",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify(data)
   });
 
-  const result = await res.json();
-
-  // INSIGHTS
-  let insights = [];
-  if (traction < 30) insights.push("⚠️ Weak traction");
-  if (team > 80) insights.push("🔥 Strong team");
-  if (market > 80) insights.push("📈 Large market");
-
-  const insightHTML = insights.map(i => `<li>${i}</li>`).join("");
-
-  document.getElementById("results").innerHTML += `
-    <div class="result-card">
-      <h3>${name}</h3>
-
-      <p class="score">Score: ${result.score}</p>
-
-      <p class="stage">Stage: <span id="stage-${name}">NEW</span></p>
-
-      <ul>${insightHTML}</ul>
-
-      <div>
-        <button onclick="updateStage('${name}','REVIEW')">Review</button>
-        <button onclick="updateStage('${name}','IC')">IC</button>
-        <button onclick="updateStage('${name}','INVESTED')">Invest</button>
-        <button onclick="updateStage('${name}','PASSED')">Pass</button>
-      </div>
-    </div>
-  `;
+  loadStartups();
 }
+
+async function loadStartups() {
+
+  const res = await fetch("/api/startups");
+  const startups = await res.json();
+
+  document.getElementById("results").innerHTML = "";
+
+  startups.forEach(s => {
+    document.getElementById("results").innerHTML += `
+      <div class="result">
+        <h3>${s.name}</h3>
+        <p>Score: ${s.score}</p>
+        <p>Decision: ${s.decision}</p>
+
+        <button onclick="updateDecision('${s._id}','INVEST')">Invest</button>
+        <button onclick="updateDecision('${s._id}','PASS')">Pass</button>
+      </div>
+    `;
+  });
+}
+
+async function updateDecision(id, decision) {
+  await fetch("/api/startup/" + id, {
+    method: "PUT",
+    headers: {"Content-Type":"application/json"},
+    body: JSON.stringify({ decision })
+  });
+
+  loadStartups();
+}
+
+window.onload = loadStartups;
 
 </script>
 

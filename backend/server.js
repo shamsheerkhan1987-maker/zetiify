@@ -1,11 +1,19 @@
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
+const mongoose = require("mongoose");
 
 const app = express();
 
 app.use(cors());
 app.use(express.json());
+
+// ================= DATABASE =================
+mongoose.connect("mongodb://127.0.0.1:27017/zetiify")
+  .then(() => console.log("MongoDB Connected"))
+  .catch(err => console.log(err));
+
+const Startup = require("./models/Startup");
 
 // ================= LOGIN =================
 app.post("/api/login", (req, res) => {
@@ -18,57 +26,51 @@ app.post("/api/login", (req, res) => {
   res.status(401).json({ message: "Invalid credentials" });
 });
 
-// ================= SCORING ENGINE =================
-function calculateScore(data) {
-  // 1. Compelling Story (30)
-  const story =
-    (data.problem * 10 +
-      data.solution * 6 +
-      data.insight * 6 +
-      data.marketSize * 5 +
-      data.narrative * 3) /
-    100 * 30;
-
-  // 2. Team (35)
-  const team =
-    (data.founderFit * 12 +
-      data.execution * 10 +
-      data.decision * 6 +
-      data.learning * 4 +
-      data.hiring * 3) /
-    100 * 35;
-
-  // 3. Traction (15)
-  const traction =
-    (data.productReady * 6 +
-      data.users * 4 +
-      data.validation * 3 +
-      data.momentum * 2) /
-    100 * 15;
-
-  // 4. Business (10)
-  const business =
-    (data.monetization * 4 +
-      data.pricing * 3 +
-      data.scalability * 2 +
-      data.cost * 1) /
-    100 * 10;
-
-  // 5. Ask (10)
-  const ask =
-    (data.funding * 4 +
-      data.useOfFunds * 3 +
-      data.runway * 2 +
-      data.valuation * 1) /
-    100 * 10;
-
-  return (story + team + traction + business + ask).toFixed(1);
+// ================= SCORING =================
+function calculateScore(s) {
+  return (
+    s.traction * 0.25 +
+    s.team * 0.30 +
+    s.market * 0.25 +
+    s.product * 0.20
+  ).toFixed(1);
 }
 
-// ================= SCORE API =================
-app.post("/api/score", (req, res) => {
-  const score = calculateScore(req.body);
-  res.json({ score });
+// ================= CREATE STARTUP =================
+app.post("/api/startup", async (req, res) => {
+  const data = req.body;
+
+  const score = calculateScore(data);
+
+  const startup = new Startup({
+    name: data.name,
+    score,
+    traction: data.traction,
+    team: data.team,
+    market: data.market,
+    product: data.product
+  });
+
+  await startup.save();
+
+  res.json(startup);
+});
+
+// ================= GET ALL =================
+app.get("/api/startups", async (req, res) => {
+  const startups = await Startup.find().sort({ score: -1 });
+  res.json(startups);
+});
+
+// ================= UPDATE DECISION =================
+app.put("/api/startup/:id", async (req, res) => {
+  const updated = await Startup.findByIdAndUpdate(
+    req.params.id,
+    { decision: req.body.decision },
+    { new: true }
+  );
+
+  res.json(updated);
 });
 
 // ================= FRONTEND =================
